@@ -12,14 +12,7 @@ EBAY_CLIENT_ID = os.getenv("EBAY_CLIENT_ID")
 EBAY_CLIENT_SECRET = os.getenv("EBAY_CLIENT_SECRET")
 
 def get_ebay_token():
-    import requests
-    import base64
-    import os
-
-    CLIENT_ID = os.getenv("EBAY_CLIENT_ID")
-    CLIENT_SECRET = os.getenv("EBAY_CLIENT_SECRET")
-
-    credentials = f"{CLIENT_ID}:{CLIENT_SECRET}"
+    credentials = f"{EBAY_CLIENT_ID}:{EBAY_CLIENT_SECRET}"
     encoded_credentials = base64.b64encode(credentials.encode()).decode()
 
     url = "https://api.ebay.com/identity/v1/oauth2/token"
@@ -35,13 +28,14 @@ def get_ebay_token():
     }
 
     response = requests.post(url, headers=headers, data=data)
+    json_response = response.json()
 
-    print("CLIENT_ID:", CLIENT_ID)
-    print("CLIENT_SECRET EXISTS:", CLIENT_SECRET is not None)
-    print("eBay response:", response.json())
+    print("eBay token response:", json_response)
 
-    print("eBay token response:", response.json())
-    return response.json().get("access_token")
+    if "access_token" not in json_response:
+        raise Exception(f"Failed to get token: {json_response}")
+
+    return json_response["access_token"]
 
 DATABASE_URL = "sqlite:///./prices.db"
 
