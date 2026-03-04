@@ -105,7 +105,12 @@ def get_gpu_prices(search: str):
     if "itemSummaries" in data:
         for item in data["itemSummaries"]:
             title = item.get("title", "No Title")
-            price_value = float(item["price"]["value"])
+            price_info = item.get("price")
+
+            if not price_info or "value" not in price_info:
+             continue  # skip items without price
+
+            price_value = float(price_info["value"])
 
             # Save to database
             new_price = Price(
