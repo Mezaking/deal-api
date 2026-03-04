@@ -12,6 +12,10 @@ EBAY_CLIENT_ID = os.getenv("EBAY_CLIENT_ID")
 EBAY_CLIENT_SECRET = os.getenv("EBAY_CLIENT_SECRET")
 
 def get_ebay_token():
+
+    print("ID loaded:", EBAY_CLIENT_ID[:5])
+    print("Secret loaded:", EBAY_CLIENT_SECRET[:5])
+    
     credentials = f"{EBAY_CLIENT_ID}:{EBAY_CLIENT_SECRET}"
     encoded_credentials = base64.b64encode(credentials.encode()).decode()
 
