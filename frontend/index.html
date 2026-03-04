@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DealFinder Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <h1>GPU Deals</h1>
+
+    <input type="text" id="searchInput" placeholder="Enter GPU model (ex: 4070)">
+    <button onclick="loadData()">Search</button>
+
+    <div id="gpu-container"></div>
+    <h2>Price History</h2>
+<canvas id="priceChart" width="400" height="200"></canvas>
+
+<script>
+    let currentSearch = "";
+    let chart;
+
+    function loadData() {
+        currentSearch = document.getElementById("searchInput").value;
+
+        fetch(`http://127.0.0.1:8000/gpu?search=${currentSearch}`)
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById("gpu-container");
+                container.innerHTML = "";
+
+                data.forEach(item => {
+                    const div = document.createElement("div");
+                    div.innerHTML = `
+                        <h3>${item.product_name}</h3>
+                        <p>Retailer: ${item.retailer}</p>
+                        <p>Price: $${item.price}</p>
+                        <hr>
+                    `;
+                    container.appendChild(div);
+                });
+
+                loadChart();
+            });
+    }
+
+    function loadChart() {
+        fetch("http://127.0.0.1:8000/history")
+            .then(response => response.json())
+            .then(data => {
+
+                const filtered = data.filter(item =>
+                    item.product_name.toLowerCase().includes(currentSearch.toLowerCase())
+                );
+
+                const labels = filtered.map((_, index) => index + 1);
+                const prices = filtered.map(item => item.price);
+
+                const ctx = document.getElementById("priceChart").getContext("2d");
+
+                if (chart) {
+                    chart.destroy();
+                }
+
+                chart = new Chart(ctx, {
+                    type: "line",
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: `${currentSearch} Price History`,
+                            data: prices,
+                            fill: false,
+                            tension: 0.1
+                        }]
+                    }
+                });
+            });
+    }
+
+    // Auto refresh every 5 seconds
+    setInterval(() => {
+        if (currentSearch !== "") {
+            loadData();
+        }
+    }, 5000);
+</script>
+
+</body>
+</html>
