@@ -119,11 +119,10 @@ def get_gpu_prices(search: str):
             price_info = item.get("price")
 
             if not price_info or "value" not in price_info:
-             continue  # skip items without price
+                continue
 
             price_value = float(price_info["value"])
 
-            # Save to database
             new_price = Price(
                 product_name=title,
                 retailer="eBay",
@@ -131,13 +130,14 @@ def get_gpu_prices(search: str):
             )
             db.add(new_price)
 
-    results.append({
-        "product_name": title,
-        "retailer": "eBay",
-        "price": price_value,
-        "url": item.get("itemWebUrl"),
-        "last_updated": "Just now"
-    })
+            # ✅ THIS MUST BE INSIDE THE LOOP
+            results.append({
+                "product_name": title,
+                "retailer": "eBay",
+                "price": price_value,
+                "url": item.get("itemWebUrl"),
+                "last_updated": "Just now"
+            })
 
     db.commit()
     db.close()
