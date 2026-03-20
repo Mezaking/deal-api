@@ -217,11 +217,11 @@ def update_tracked_products():
 
     return {"message": f"Updated tracked products. Saved {total_saved} price entries."}
 
-scheduler = BackgroundScheduler()
-
-def scheduled_update():
-    print("Running scheduled update...")
-    update_tracked_products()
-
-scheduler.add_job(scheduled_update, "interval", minutes=10)
-scheduler.start()
+# scheduler = BackgroundScheduler()
+#
+# def scheduled_update():
+#     print("Running scheduled update...")
+#     update_tracked_products()
+#
+# scheduler.add_job(scheduled_update, "interval", minutes=10)
+# scheduler.start()
