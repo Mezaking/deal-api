@@ -1,3 +1,5 @@
+from dotenv import load_dotenv
+load_dotenv()
 from apscheduler.schedulers.background import BackgroundScheduler
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -7,6 +9,11 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 import requests
 import base64
 import os
+
+load_dotenv()
+
+print("ID loaded:", os.getenv("EBAY_CLIENT_ID"))
+print("SECRET loaded:", os.getenv("EBAY_CLIENT_SECRET"))
 
 EBAY_CLIENT_ID = os.getenv("EBAY_CLIENT_ID")
 EBAY_CLIENT_SECRET = os.getenv("EBAY_CLIENT_SECRET")
@@ -124,11 +131,13 @@ def get_gpu_prices(search: str):
             )
             db.add(new_price)
 
-            results.append({
-                "product_name": title,
-                "retailer": "eBay",
-                "price": price_value
-            })
+    results.append({
+        "product_name": title,
+        "retailer": "eBay",
+        "price": price_value,
+        "url": item.get("itemWebUrl"),
+        "last_updated": "Just now"
+    })
 
     db.commit()
     db.close()
